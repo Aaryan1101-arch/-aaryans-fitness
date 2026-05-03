@@ -4,20 +4,96 @@
 
 @layer components {
     .button {
-        @apply font-medium text-white bg-[#a80717] hover:shadow-md hover:shadow-[#a80717]/30 rounded-xl px-5 py-2;
+        @apply relative inline-flex items-center justify-center font-medium text-white bg-brand rounded-xl px-5 py-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0;
+    }
+
+    .button::after {
+        content: "";
+        @apply absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 pointer-events-none;
+        background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+    }
+
+    .button:hover::after {
+        @apply opacity-100;
+        animation: shimmer 1.4s linear infinite;
     }
 
     .button:active {
-        scale: 0.9;
+        scale: 0.96;
         transition: all 0.1s ease;
     }
 
+    .button-ghost {
+        @apply inline-flex items-center justify-center font-medium text-white/80 border border-white/20 rounded-xl px-5 py-2 transition-all duration-300 hover:text-white hover:border-white/60 hover:bg-white/5;
+    }
+
     .navbar {
-        @apply fixed z-10 top-0 w-full px-8 sm:px-12 md:px-16 py-3 font-medium text-white/60 bg-black/90 backdrop-blur flex justify-between items-center shadow;
+        @apply fixed z-30 top-0 w-full px-8 sm:px-12 md:px-16 py-3 font-medium text-white/70 flex justify-between items-center transition-all duration-300;
+    }
+
+    .navbar-scrolled {
+        @apply bg-black/85 backdrop-blur-md shadow-[0_2px_24px_-12px_rgba(0,0,0,0.6)] border-b border-white/5;
+    }
+
+    .navbar-top {
+        @apply bg-gradient-to-b from-black/70 to-transparent;
+    }
+
+    .nav-link {
+        @apply relative inline-block py-1 transition-colors duration-200 hover:text-white;
+    }
+
+    .nav-link::after {
+        content: "";
+        @apply absolute left-0 -bottom-0.5 h-0.5 w-0 bg-brand transition-all duration-300 rounded-full;
+    }
+
+    .nav-link:hover::after,
+    .nav-link.is-active::after {
+        @apply w-full;
+    }
+
+    .nav-link.is-active {
+        @apply text-white;
     }
 
     .card-content {
         clip-path: polygon(0 0, 100% 0, 75% 100%, 0% 100%);
+    }
+
+    .section {
+        @apply relative py-20 px-5 xs:px-8 sm:px-12 md:px-16;
+    }
+
+    .section-title {
+        @apply text-2xl xs:text-3xl sm:text-4xl text-center font-semibold uppercase tracking-wide text-white;
+    }
+
+    .section-eyebrow {
+        @apply text-brand text-xs sm:text-sm uppercase tracking-[0.3em] font-semibold text-center mb-3 block;
+    }
+
+    .section-sub {
+        @apply mt-3 mb-12 text-center text-white/60 sm:text-lg font-medium max-w-2xl mx-auto;
+    }
+
+    /* Glassy card surface used for plans, reviews, etc. */
+    .glass-card {
+        @apply relative rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-card transition-all duration-300;
+    }
+
+    .glass-card:hover {
+        @apply border-white/20 bg-white/[0.05] -translate-y-1 shadow-card-hover;
+    }
+
+    /* Animated gradient divider used between sections. */
+    .divider {
+        @apply h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent;
+    }
+
+    /* Base style for an icon button (close, back-to-top, etc.). */
+    .icon-button {
+        @apply inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/70 border border-white/10 text-white/80 hover:text-white hover:bg-black/90 hover:border-white/30 transition-all duration-200;
     }
 }
 
@@ -28,23 +104,71 @@
         box-sizing: border-box !important;
         font-family: Figtree, sans-serif !important;
         font-feature-settings: normal !important;
-        /* border: 1px solid red; */
     }
 
     html {
-        scroll-padding: 3rem;
+        scroll-padding-top: 4.5rem;
+        scroll-behavior: smooth;
     }
 
     body {
-        background-color: #111111;
+        background-color: #0a0a0a;
+        color: rgba(255, 255, 255, 0.85);
+        overflow-x: hidden;
+    }
+
+    /* Subtle dotted noise behind the whole page for visual depth. */
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+        background-size: 3px 3px;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.7;
     }
 
     .container:hover .overlay {
         height: 100%;
     }
 
+    /* Scrollbars: thin and on-brand on desktop, hidden on touch devices. */
     ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(168, 7, 23, 0.5);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(168, 7, 23, 0.85);
+    }
+
+    /* Hide horizontal-only scrollbars on snap rows. */
+    .no-scrollbar::-webkit-scrollbar {
         display: none;
-        scroll-behavior: smooth;
+    }
+
+    .no-scrollbar {
+        scrollbar-width: none;
+    }
+
+    /* Honour reduced-motion preference. */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.001ms !important;
+            transition-duration: 0.001ms !important;
+            scroll-behavior: auto !important;
+        }
     }
 }

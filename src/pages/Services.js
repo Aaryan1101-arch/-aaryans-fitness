@@ -1,54 +1,89 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useSiteContent, imgUrl } from "../sanity/SiteContent";
+import SectionHeading from "../components/motion/SectionHeading";
+
+const ServiceCard = ({ service, index }) => {
+  const [open, setOpen] = useState(false);
+  const img = imgUrl(service.image);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -6 }}
+      onClick={() => setOpen((v) => !v)}
+      className="group relative flex-shrink-0 snap-center w-10/12 xs:w-9/12 md:w-full aspect-[5/4] rounded-2xl overflow-hidden border border-white/10 cursor-pointer container shadow-card hover:shadow-card-hover transition-all duration-300"
+    >
+      {/* Background image with hover zoom */}
+      <div
+        className="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-110"
+        style={img ? { backgroundImage: `url(${img})` } : undefined}
+      />
+      {/* Bottom gradient so the title is always readable */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+
+      {/* Title chip */}
+      <div className="absolute top-4 left-0 bg-black/80 backdrop-blur-sm pl-4 pr-6 py-2 card-content border-l-4 border-brand">
+        <p className="text-brand text-base sm:text-lg font-semibold">
+          {service.title}
+        </p>
+      </div>
+
+      {/* Reveal-on-hover overlay */}
+      <div
+        className={`overlay absolute top-0 left-0 right-0 bg-black/85 backdrop-blur overflow-hidden w-full transition-all ease-in-out duration-300 ${
+          open ? "h-full" : "h-0"
+        }`}
+      >
+        <div className="h-full flex flex-col justify-center items-center px-6">
+          <p className="text-xs uppercase tracking-[0.3em] text-brand mb-3">
+            Class times
+          </p>
+          <p className="text-xl font-medium text-white mb-2">{service.title}</p>
+          <div className="text-white/80 text-base text-center space-y-1">
+            <p>
+              <span className="text-white/40">Morning · </span>
+              {service.morningHours}
+            </p>
+            <p>
+              <span className="text-white/40">Evening · </span>
+              {service.eveningHours}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom-right "tap" hint, mobile */}
+      <div className="absolute bottom-3 right-3 text-[10px] uppercase tracking-widest text-white/50 sm:hidden">
+        Tap for hours
+      </div>
+    </motion.div>
+  );
+};
 
 const Services = () => {
-  const [showDetailsOnclick, setShowDetailsOnClick] = useState(true);
+  const { content } = useSiteContent();
+  const services = content.services || [];
+
   return (
     <section
       id="services"
-      className="py-16 px-5 xs:px-8 sm:px-12 md:px-16 text-white/90 bg-[#171717]"
+      className="section bg-ink-800 overflow-hidden"
     >
-      <h1 className="mb-4 text-xl xs:text-2xl sm:text-3xl text-center font-semibold uppercase">
-        Our Services
-      </h1>
-      <p className="mb-2 text-center text-white/60 text-lg font-medium mx-auto">
-        Stop searching, start thriving!
-      </p>
-      <p className="mb-8 text-center text-white/60 sm:text-lg font-medium team:w-2/3 mx-auto">
-        Unlock your potential, from fitness feats to career climbs. Let's make
-        magic happen!
-      </p>
-      <div className="relative">
-        <div className="md:grid flex overflow-x-auto snap-x snap-mandatory md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 team:gap-12 place-items-center">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 snap-center bg-[url('./assets/team.jpg')] bg-center-top bg-no-repeat bg-cover w-10/12 xs:w-9/12 md:w-full aspect-[5/4] border border-white/30 relative container"
-              onClick={() => setShowDetailsOnClick(!showDetailsOnclick)}
-            >
-              <div
-                className={`overlay absolute top-0 left-0 right-0 bg-black/80 overflow-hidden w-full transition-all ease-in-out duration-300
-                ${showDetailsOnclick ? "h-0" : "h-[100%]"}`}
-              >
-                <div className="h-full flex flex-col justify-center items-center">
-                  <p className="text-xl font-medium uppercase mb-2">Classes</p>
-                  <p className="text-lg mb-1">Morning: 7 AM to 9 AM</p>
-                  <p className="text-lg">Evening: 6 PM to 8 PM</p>
-                </div>
-              </div>
-              <div className="card-content w-[70%] bg-black/80 absolute left-0 top-0 pl-3 py-1">
-                <p className="text-[#a80717] text-xl font-medium">
-                  Body Building
-                </p>
-              </div>
-            </div>
+      <SectionHeading
+        eyebrow="What we do"
+        title="Our Services"
+        sub="Stop searching, start thriving. From strength to mindfulness — pick the discipline that moves you."
+      />
+
+      <div className="relative max-w-6xl mx-auto">
+        <div className="md:grid flex overflow-x-auto snap-x snap-mandatory md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 no-scrollbar">
+          {services.map((service, i) => (
+            <ServiceCard key={service._id} service={service} index={i} />
           ))}
         </div>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8 bg-black/70 rounded-full p-2 absolute md:hidden top-1/2 left-1 transform -translate-y-1/2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8 bg-black/70 rounded-full p-2 absolute md:hidden top-1/2 right-1 transform -translate-y-1/2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-        </svg>
       </div>
     </section>
   );

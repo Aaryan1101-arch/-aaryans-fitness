@@ -1,58 +1,197 @@
-import React, { useState, useEffect, useRef } from "react";
-import logo from "../assets/logo.png";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSiteContent, imgUrl } from "../sanity/SiteContent";
+import useActiveSection from "../hooks/useActiveSection";
+
+const NAV_LINKS = [
+  { id: "hero", label: "Home" },
+  { id: "services", label: "Services" },
+  { id: "gallery", label: "Gallery" },
+  { id: "team", label: "Team" },
+  { id: "membership", label: "Membership" },
+  { id: "reviews", label: "Reviews" },
+  { id: "contact", label: "Contact" },
+];
+
+const NAV_IDS = NAV_LINKS.map((l) => l.id);
 
 const Navbar = ({ handleClick }) => {
-  const [showMenu, setShowMenu] = useState(true);
-  const menuRef = useRef();
+  const { content } = useSiteContent();
+  const settings = content.siteSettings || {};
+  const logoUrl = imgUrl(settings.logo);
+
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const active = useActiveSection(NAV_IDS);
+
   useEffect(() => {
-    let handle = (e) => {
-      if (menuRef && menuRef.current && !menuRef.current.contains(e.target)) {
-        setShowMenu(true);
-      }
-    };
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, [menuRef]);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close mobile drawer whenever the user navigates to a link.
+  const navigate = (e, id) => {
+    setOpen(false);
+    handleClick(e, id);
+  };
 
   return (
-    <nav className="navbar">
-      <div className="flex items-center gap-10">
-        <div className="flex items-center gap-4">
-          <div onClick={() => setShowMenu(!showMenu)} className="cursor-pointer">
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 lg:hidden text-white">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
-            </svg>
+    <>
+      <nav className={`navbar ${scrolled ? "navbar-scrolled" : "navbar-top"}`}>
+        <div className="flex items-center gap-10">
+          {/* Hamburger (mobile only) */}
+          <button
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Toggle menu"
+            className="lg:hidden relative w-8 h-8 flex flex-col justify-center items-center gap-1.5 text-white"
+          >
+            <motion.span
+              animate={
+                open
+                  ? { rotate: 45, y: 7, width: 24 }
+                  : { rotate: 0, y: 0, width: 24 }
+              }
+              transition={{ duration: 0.25 }}
+              className="block h-[2px] bg-white rounded"
+              style={{ width: 24 }}
+            />
+            <motion.span
+              animate={open ? { opacity: 0 } : { opacity: 1 }}
+              transition={{ duration: 0.15 }}
+              className="block h-[2px] w-5 bg-white rounded"
+            />
+            <motion.span
+              animate={
+                open
+                  ? { rotate: -45, y: -7, width: 24 }
+                  : { rotate: 0, y: 0, width: 16 }
+              }
+              transition={{ duration: 0.25 }}
+              className="block h-[2px] bg-white rounded"
+            />
+          </button>
+
+          <a
+            href="/"
+            onClick={(e) => navigate(e, "hero")}
+            className="flex items-center gap-3 group"
+          >
+            {logoUrl && (
+              <img
+                src={logoUrl}
+                className="w-16 sm:w-20 aspect-[3/2] object-contain transition-transform duration-300 group-hover:scale-105"
+                alt={settings.siteName || "Logo"}
+              />
+            )}
+          </a>
+
+          {/* Desktop nav */}
+          <div className="hidden lg:flex items-center gap-7">
+            {NAV_LINKS.map((l) => (
+              <a
+                key={l.id}
+                href="/"
+                onClick={(e) => navigate(e, l.id)}
+                className={`nav-link text-sm tracking-wide ${
+                  active === l.id ? "is-active" : ""
+                }`}
+              >
+                {l.label}
+              </a>
+            ))}
           </div>
-          <a href="/" onClick={(e) => handleClick(e, "hero")}><img src={logo} className="w-20 aspect-[3/2] object-contain" alt="Aaryan's Fitness Center" /></a>
         </div>
-        <div className="hidden lg:flex items-center gap-8">
-          <a href="/" onClick={(e) => handleClick(e, "hero")} className="hover:text-white">Home</a>
-          <a href="/" onClick={(e) => handleClick(e, "services")} className="hover:text-white">Services</a>
-          <a href="/" onClick={(e) => handleClick(e, "gallery")} className="hover:text-white">Gallery</a>
-          <a href="/" onClick={(e) => handleClick(e, "team")} className="hover:text-white">Team</a>
-          <a href="/" onClick={(e) => handleClick(e, "membership")} className="hover:text-white">Membership</a>
-          <a href="/" onClick={(e) => handleClick(e, "reviews")} className="hover:text-white">Reviews</a>
-          <a href="/" onClick={(e) => handleClick(e, "contact")} className="hover:text-white">Contact</a>
-        </div>
-      </div>
-      <div ref={menuRef} className={`bg-black/95 absolute lg:hidden w-56 h-screen top-0 transition-all ease-in-out ${showMenu ? "-left-56" : "left-0"}`}>
-        <div onClick={() => setShowMenu(!showMenu)} className="cursor-pointer">
-          <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 absolute right-6 top-6 text-white">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-          </svg>
-        </div>
-        <div className="grid grid-cols-1 divide-y divide-white/30 mt-16">
-          <a href="/" onClick={(e) => handleClick(e, "hero")} className="hover:text-white px-8 sm:px-12 md:px-16 py-4">Home</a>
-          <a href="/" onClick={(e) => handleClick(e, "services")} className="hover:text-white px-8 sm:px-12 md:px-16 py-4">Services</a>
-          <a href="/" onClick={(e) => handleClick(e, "gallery")} className="hover:text-white px-8 sm:px-12 md:px-16 py-4">Gallery</a>
-          <a href="/" onClick={(e) => handleClick(e, "team")} className="hover:text-white px-8 sm:px-12 md:px-16 py-4">Team</a>
-          <a href="/" onClick={(e) => handleClick(e, "membership")} className="hover:text-white px-8 sm:px-12 md:px-16 py-4">Membership</a>
-          <a href="/" onClick={(e) => handleClick(e, "reviews")} className="hover:text-white px-8 sm:px-12 md:px-16 py-4">Reviews</a>
-          <a href="/" onClick={(e) => handleClick(e, "contact")} className="hover:text-white px-8 sm:px-12 md:px-16 py-4">Contact</a>
-        </div>
-      </div>
-      <a href="/" onClick={(e) => handleClick(e, "contact")} className="button cursor-pointer">Join Now</a>
-    </nav>
+
+        <a
+          href="/"
+          onClick={(e) => navigate(e, "contact")}
+          className="button text-sm sm:text-base"
+        >
+          Join Now
+        </a>
+      </nav>
+
+      {/* Mobile drawer */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 z-20 bg-black/60 lg:hidden"
+            />
+            <motion.aside
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
+              className="fixed top-0 left-0 bottom-0 z-30 w-72 bg-ink-900 border-r border-white/10 lg:hidden flex flex-col"
+            >
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+                <p className="text-sm tracking-[0.3em] text-brand uppercase">
+                  Menu
+                </p>
+                <button
+                  onClick={() => setOpen(false)}
+                  aria-label="Close menu"
+                  className="icon-button w-9 h-9"
+                >
+                  <svg
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18 18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex-1 px-2 py-4 overflow-y-auto">
+                {NAV_LINKS.map((l, i) => (
+                  <motion.a
+                    key={l.id}
+                    href="/"
+                    onClick={(e) => navigate(e, l.id)}
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.04 }}
+                    className={`flex items-center justify-between px-5 py-3 rounded-lg mx-2 my-1 text-base transition-colors ${
+                      active === l.id
+                        ? "bg-brand/15 text-white"
+                        : "text-white/70 hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    <span>{l.label}</span>
+                    {active === l.id && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand shadow-glow-sm" />
+                    )}
+                  </motion.a>
+                ))}
+              </div>
+              <div className="p-5 border-t border-white/10">
+                <a
+                  href="/"
+                  onClick={(e) => navigate(e, "contact")}
+                  className="button w-full justify-center"
+                >
+                  Join Now
+                </a>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

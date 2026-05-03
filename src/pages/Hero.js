@@ -1,43 +1,164 @@
 import React from "react";
-import equipment from "../assets/equipment.webp"
-import nutrition from "../assets/nutrition.webp"
-import training from "../assets/training.webp"
-import unique from "../assets/unique.webp"
+import { motion } from "framer-motion";
+import { useSiteContent, imgUrl } from "../sanity/SiteContent";
+import Reveal from "../components/motion/Reveal";
 
 const Hero = ({ handleClick }) => {
+  const { content } = useSiteContent();
+  const hero = content.hero;
+  const bg = imgUrl(hero.backgroundImage);
+
+  // Stagger the headline word-by-word.
+  const words = (hero.headline || "").split(" ");
+
   return (
     <>
-      <div id="hero" className="bg-[url('./assets/hero-bg.jpg')] bg-center-top bg-no-repeat bg-cover h-screen w-full" />
-      <div className="absolute h-screen inset-0 flex justify-center items-center bg-black/60">
-        <div className="text-center px-8 xs:px-12 sm:px-16">
-          <p className="text-[#a80717] text-3xl xs:text-4xl sm:text-5xl font-semibold">Aaryan's Fitness Club</p>
-          <p className="mt-2 mb-8 text-white/90 xs:text-lg sm:text-xl font-medium">At <span className="font-semibold">The Aaryan's Zone</span>, we do everything to help you become your best self.</p>
-          <a href="/" onClick={(e) => handleClick(e, "contact")} className="button text-lg py-3">Start Today</a>
+      <section
+        id="hero"
+        className="relative h-screen w-full overflow-hidden"
+      >
+        {/* Background image with slow Ken Burns animation */}
+        <div
+          className="absolute inset-0 bg-center bg-no-repeat bg-cover animate-ken-burns"
+          style={bg ? { backgroundImage: `url(${bg})` } : undefined}
+        />
+        {/* Gradient + dim overlay so text stays readable on any photo */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/55 to-black/85" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+
+        {/* Headline content */}
+        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6 sm:px-12">
+          <motion.span
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="section-eyebrow"
+          >
+            Welcome to
+          </motion.span>
+
+          <h1 className="text-brand text-4xl xs:text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] drop-shadow-[0_4px_20px_rgba(168,7,23,0.5)]">
+            {words.map((w, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                transition={{ duration: 0.55, delay: 0.25 + i * 0.08 }}
+                className="inline-block mr-3"
+              >
+                {w}
+              </motion.span>
+            ))}
+          </h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.6,
+              delay: 0.25 + words.length * 0.08 + 0.1,
+            }}
+            className="mt-5 max-w-2xl text-white/85 text-base xs:text-lg sm:text-xl font-medium"
+          >
+            {hero.subheading}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.55,
+              delay: 0.5 + words.length * 0.08,
+            }}
+            className="mt-9 flex flex-col xs:flex-row items-center gap-4"
+          >
+            <a
+              href="/"
+              onClick={(e) => handleClick(e, "contact")}
+              className="button text-base sm:text-lg px-7 py-3 animate-pulse-glow"
+            >
+              {hero.ctaLabel || "Start Today"}
+            </a>
+            <a
+              href="/"
+              onClick={(e) => handleClick(e, "membership")}
+              className="button-ghost text-base sm:text-lg px-7 py-3"
+            >
+              View Plans
+            </a>
+          </motion.div>
         </div>
-      </div>
-      <div className="py-16 text-center px-5 xs:px-8 sm:px-12 bg-[#111111]">
-        <h1 className="text-xl xs:text-2xl sm:text-3xl font-semibold text-white/90 uppercase">Why Choose Us?</h1>
-        <div className="grid grid-cols-2 about-4:grid-cols-4 gap-12 md:gap-16 place-items-center py-12">
-          <div className="text-white/90 ml-auto about-4:mx-auto flex flex-col justify-center items-center rounded-2xl border border-white/30 py-4 sm:py-8 px-2 w-36 xs:w-44 sm:w-60 aspect-[3/2]">
-            <img src={equipment} className="w-10 xs:w-12" alt="Modern Equipment" />
-            <h4 className="text-sm xs:text-base sm:text-lg font-medium sm:font-semibold mt-2 sm:mt-4">Modern Equipment</h4>
-          </div>
-          <div className="text-white/90 mr-auto about-4:mx-auto flex flex-col justify-center items-center rounded-2xl border border-white/30 py-4 sm:py-8 px-2 w-36 xs:w-44 sm:w-60 aspect-[3/2]">
-            <img src={nutrition} className="w-10 xs:w-12" alt="Healthy Nutrition" />
-            <h4 className="text-sm xs:text-base sm:text-lg font-medium sm:font-semibold mt-2 sm:mt-4">Healthy Nutrition</h4>
-          </div>
-          <div className="text-white/90 ml-auto about-4:mx-auto flex flex-col justify-center items-center rounded-2xl border border-white/30 py-4 sm:py-8 px-2 w-36 xs:w-44 sm:w-60 aspect-[3/2]">
-            <img src={training} className="w-10 xs:w-12" alt="Expert Training" />
-            <h4 className="text-sm xs:text-base sm:text-lg font-medium sm:font-semibold mt-2 sm:mt-4">Expert Training</h4>
-          </div>
-          <div className="text-white/90 mr-auto about-4:mx-auto flex flex-col justify-center items-center rounded-2xl border border-white/30 py-4 sm:py-8 px-2 w-36 xs:w-44 sm:w-60 aspect-[3/2]">
-            <img src={unique} className="w-10 xs:w-12" alt="Tailored Package" />
-            <h4 className="text-sm xs:text-base sm:text-lg font-medium sm:font-semibold mt-2 sm:mt-4">Tailored Package</h4>
-          </div>
-        </div>
-        <p className="text-sm xs:text-lg text-white/60">Ditch the excuses, grab your motivation backpack!</p>
-        <p className="xs:text-lg mt-2 text-white/60">"Get Ready To Reach Your Fitness Goals"</p>
-      </div>
+
+        {/* Animated scroll indicator */}
+        <motion.a
+          href="/"
+          onClick={(e) => handleClick(e, "services")}
+          aria-label="Scroll down"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4, duration: 0.6 }}
+          className="absolute z-10 bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/60 hover:text-white transition-colors"
+        >
+          <span className="text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            className="w-6 h-9 rounded-full border-2 border-white/40 flex items-start justify-center pt-1.5"
+          >
+            <div className="w-1 h-2 rounded-full bg-white/70" />
+          </motion.div>
+        </motion.a>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="relative py-20 px-5 xs:px-8 sm:px-12 bg-ink-900 overflow-hidden">
+        {/* Decorative red glow blob */}
+        <div
+          aria-hidden
+          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[80vw] h-64 rounded-full bg-brand/20 blur-3xl pointer-events-none"
+        />
+        <Reveal>
+          <span className="section-eyebrow">Why us</span>
+          <h2 className="section-title">
+            {hero.whyChooseUsTitle || "Why Choose Us?"}
+          </h2>
+          <div className="mx-auto mt-3 h-[3px] w-12 rounded-full bg-brand shadow-glow-sm" />
+        </Reveal>
+
+        <Reveal stagger delay={0.1} className="grid grid-cols-2 about-4:grid-cols-4 gap-6 sm:gap-10 place-items-center mt-14 max-w-6xl mx-auto relative z-10">
+          {(hero.whyChooseUsItems || []).map((item, i) => {
+            const iconUrl = imgUrl(item.icon);
+            return (
+              <div
+                key={item._key || i}
+                className="group glass-card flex flex-col justify-center items-center py-6 sm:py-8 px-4 w-full max-w-xs aspect-[3/2]"
+              >
+                <div className="relative mb-3">
+                  {/* Soft glow behind the icon on hover */}
+                  <span className="absolute inset-0 rounded-full bg-brand/30 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  {iconUrl && (
+                    <img
+                      src={iconUrl}
+                      className="relative w-10 xs:w-12 transition-transform duration-300 group-hover:scale-110"
+                      alt={item.title}
+                    />
+                  )}
+                </div>
+                <h4 className="text-sm xs:text-base sm:text-lg font-semibold text-white/90 text-center">
+                  {item.title}
+                </h4>
+              </div>
+            );
+          })}
+        </Reveal>
+
+        <Reveal delay={0.2} className="text-center mt-14">
+          <p className="text-sm xs:text-lg text-white/60">{hero.tagline1}</p>
+          <p className="text-base xs:text-xl mt-2 text-white/90 italic">
+            {hero.tagline2}
+          </p>
+        </Reveal>
+      </section>
     </>
   );
 };

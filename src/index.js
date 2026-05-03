@@ -3,11 +3,15 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
+import { SiteContentProvider } from "./sanity/SiteContent";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <SiteContentProvider>
+        <App />
+      </SiteContentProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
