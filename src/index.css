@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .button {
+        @apply font-medium text-white bg-[#a80717] hover:shadow-md hover:shadow-[#a80717]/30 rounded-xl px-5 py-2;
+    }
+
+    .button:active {
+        scale: 0.9;
+        transition: all 0.1s ease;
+    }
+
+    .navbar {
+        @apply fixed z-10 top-0 w-full px-8 sm:px-12 md:px-16 py-3 font-medium text-white/60 bg-black/90 backdrop-blur flex justify-between items-center shadow;
+    }
+
+    .card-content {
+        clip-path: polygon(0 0, 100% 0, 75% 100%, 0% 100%);
+    }
+}
+
+@layer base {
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box !important;
+        font-family: Figtree, sans-serif !important;
+        font-feature-settings: normal !important;
+        /* border: 1px solid red; */
+    }
+
+    html {
+        scroll-padding: 3rem;
+    }
+
+    body {
+        background-color: #111111;
+    }
+
+    .container:hover .overlay {
+        height: 100%;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
+        scroll-behavior: smooth;
+    }
+}
