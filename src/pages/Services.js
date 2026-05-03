@@ -14,7 +14,7 @@ const ServiceCard = ({ service, index }) => {
       transition={{ duration: 0.5, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -6 }}
       onClick={() => setOpen((v) => !v)}
-      className="group relative flex-shrink-0 snap-center w-10/12 xs:w-9/12 md:w-full aspect-[5/4] rounded-2xl overflow-hidden border border-white/10 cursor-pointer container shadow-card hover:shadow-card-hover transition-all duration-300"
+      className="group relative flex-shrink-0 snap-center w-10/12 xs:w-9/12 md:w-full aspect-[5/4] rounded-2xl overflow-hidden border border-white/10 cursor-pointer shadow-card hover:shadow-card-hover transition-all duration-300"
     >
       {/* Background image with hover zoom */}
       <div
@@ -31,10 +31,10 @@ const ServiceCard = ({ service, index }) => {
         </p>
       </div>
 
-      {/* Reveal-on-hover overlay */}
+      {/* Desktop: shows on hover via group-hover. Mobile: toggled by click state. */}
       <div
-        className={`overlay absolute top-0 left-0 right-0 bg-black/85 backdrop-blur overflow-hidden w-full transition-all ease-in-out duration-300 ${
-          open ? "h-full" : "h-0"
+        className={`absolute top-0 left-0 right-0 bg-black/85 backdrop-blur overflow-hidden w-full transition-all ease-in-out duration-300 ${
+          open ? "h-full" : "h-0 group-hover:h-full"
         }`}
       >
         <div className="h-full flex flex-col justify-center items-center px-6">
