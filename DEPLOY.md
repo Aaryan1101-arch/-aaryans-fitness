@@ -62,7 +62,7 @@ git commit -m "CMS-driven site"
 Then create an empty repo on <https://github.com/new> (no README/license/.gitignore — we have those). Copy the URL it shows, then:
 
 ```bash
-git remote add origin https://github.com/<your-username>/aaryans-fitness.git
+git remote add origin https://github.com/Aaryan1101-arch/-aaryans-fitness.git
 git push -u origin main
 ```
 
@@ -191,7 +191,7 @@ You don't need a custom domain for the studio — `*.sanity.studio` is fine for 
 |---|---|
 | Source code | `~/Desktop/gym/` |
 | Admin schemas (advanced) | `~/Desktop/gym/studio/schemas/` |
-| GitHub repo | `https://github.com/<your-username>/aaryans-fitness` |
+| GitHub repo | `https://github.com/Aaryan1101-arch/-aaryans-fitness` |
 | Live site | `https://aaryans-fitness.vercel.app` |
 | Admin panel | `https://aaryans-fitness.sanity.studio` |
 | Vercel dashboard | <https://vercel.com/dashboard> |
