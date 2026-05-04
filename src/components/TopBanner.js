@@ -27,10 +27,10 @@ function isExternal(url) {
 
 export default function TopBanner() {
   const { content } = useSiteContent();
-  const notices = content?.notices || [];
-  const offers = (content?.offers || []).filter((o) => o.isFeatured !== false);
 
   const items = useMemo(() => {
+    const notices = content?.notices || [];
+    const offers = (content?.offers || []).filter((o) => o.isFeatured !== false);
     const noticeItems = notices.map((n) => ({
       kind: "notice",
       key: `n-${n._id}`,
@@ -49,7 +49,7 @@ export default function TopBanner() {
       ctaUrl: o.ctaUrl,
     }));
     return [...noticeItems, ...offerItems];
-  }, [notices, offers]);
+  }, [content]);
 
   const [index, setIndex] = useState(0);
   const [dismissed, setDismissed] = useState(false);

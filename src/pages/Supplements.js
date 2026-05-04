@@ -147,7 +147,7 @@ function SupplementCard({ s, index }) {
 
 const Supplements = () => {
   const { content } = useSiteContent();
-  const supplements = content?.supplements || [];
+  const supplements = useMemo(() => content?.supplements || [], [content]);
   const [filter, setFilter] = useState(null);
 
   const visible = useMemo(() => {
