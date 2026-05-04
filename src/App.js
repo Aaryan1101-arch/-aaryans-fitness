@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -6,7 +7,9 @@ import BackToTop from "./components/motion/BackToTop";
 import ScrollProgress from "./components/motion/ScrollProgress";
 import { useSiteContent, imgUrl } from "./sanity/SiteContent";
 
-function App() {
+const Admin = lazy(() => import("./admin"));
+
+function PublicSite() {
   const { content } = useSiteContent();
   const settings = content.siteSettings;
 
@@ -28,11 +31,9 @@ function App() {
 
   const handleClick = (e, sectionId) => {
     e.preventDefault();
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
   };
+
   return (
     <div className="App">
       <ScrollProgress />
@@ -41,6 +42,22 @@ function App() {
       <Footer handleClick={handleClick} />
       <BackToTop />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route
+        path="/admin/*"
+        element={
+          <Suspense fallback={<div className="min-h-screen bg-[#0a0a0a]" />}>
+            <Admin />
+          </Suspense>
+        }
+      />
+      <Route path="*" element={<PublicSite />} />
+    </Routes>
   );
 }
 

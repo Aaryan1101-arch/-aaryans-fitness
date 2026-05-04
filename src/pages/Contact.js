@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSiteContent } from "../sanity/SiteContent";
 import SectionHeading from "../components/motion/SectionHeading";
+import { supabase, supabaseConfigured } from "../supabase/client";
 
 // EmailJS credentials come from environment variables.
 // Add these to .env.local (local) or Vercel Environment Variables (production):
@@ -50,23 +51,42 @@ const Contact = () => {
     setTimeout(() => setToast(null), ms);
   };
 
-  const sendEmail = (e) => {
+  const sendEmail = async (e) => {
     e.preventDefault();
-    if (!emailConfigured) return;
+    if (!emailConfigured && !supabaseConfigured) return;
     setLoading(true);
-    emailjs
-      .sendForm(EJ_SERVICE, EJ_TEMPLATE, form.current, { publicKey: EJ_KEY })
-      .then(
-        () => {
-          showToast("success", "Message sent! We'll reply within a day.");
-          form.current.reset();
-        },
-        (err) => {
-          console.error("[emailjs]", err);
-          showToast("error", "Could not send. Call or WhatsApp us directly.");
-        }
-      )
-      .finally(() => setLoading(false));
+
+    const fd = new FormData(form.current);
+    const tasks = [];
+
+    if (supabaseConfigured) {
+      tasks.push(
+        supabase.from("leads").insert({
+          source: "contact_form",
+          name: fd.get("user_name") || "",
+          phone: fd.get("user_number") || "",
+          email: fd.get("user_email") || "",
+          message: fd.get("message") || "",
+        })
+      );
+    }
+
+    if (emailConfigured) {
+      tasks.push(
+        emailjs.sendForm(EJ_SERVICE, EJ_TEMPLATE, form.current, { publicKey: EJ_KEY })
+      );
+    }
+
+    try {
+      await Promise.all(tasks);
+      showToast("success", "Message sent! We'll reply within a day.");
+      form.current.reset();
+    } catch (err) {
+      console.error("[contact]", err);
+      showToast("error", "Could not send. Call or WhatsApp us directly.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -135,7 +155,7 @@ const Contact = () => {
           transition={{ duration: 0.5, delay: 0.05 }}
           className="relative mx-auto form:mx-0"
         >
-          {emailConfigured ? (
+          {(emailConfigured || supabaseConfigured) ? (
             <form ref={form} onSubmit={sendEmail}>
               <FormField label="Full Name"      id="user_name"   name="user_name"   required placeholder="Your name" />
               <FormField label="Email Address"  id="user_email"  name="user_email"  type="email" placeholder="you@example.com" />
