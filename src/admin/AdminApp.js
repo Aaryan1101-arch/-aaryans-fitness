@@ -6,6 +6,13 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Leads from './pages/Leads'
 import Members from './pages/Members'
+import SiteSettings from './pages/content/SiteSettings'
+import HeroEditor from './pages/content/HeroEditor'
+import PlansEditor from './pages/content/PlansEditor'
+import ServicesEditor from './pages/content/ServicesEditor'
+import GalleryEditor from './pages/content/GalleryEditor'
+import TeamEditor from './pages/content/TeamEditor'
+import ReviewsEditor from './pages/content/ReviewsEditor'
 
 function Spinner() {
   return (
@@ -28,6 +35,13 @@ function AdminShell({ admin, onSignOut }) {
           <Route index element={<Dashboard admin={admin} />} />
           <Route path="leads" element={<Leads />} />
           <Route path="members" element={<Members />} />
+          <Route path="content/settings" element={<SiteSettings />} />
+          <Route path="content/hero" element={<HeroEditor />} />
+          <Route path="content/plans" element={<PlansEditor />} />
+          <Route path="content/services" element={<ServicesEditor />} />
+          <Route path="content/gallery" element={<GalleryEditor />} />
+          <Route path="content/team" element={<TeamEditor />} />
+          <Route path="content/reviews" element={<ReviewsEditor />} />
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>
       </main>
