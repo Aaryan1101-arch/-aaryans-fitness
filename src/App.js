@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import TopBanner from "./components/TopBanner";
 import Home from "./pages/Home";
 import BackToTop from "./components/motion/BackToTop";
 import ScrollProgress from "./components/motion/ScrollProgress";
@@ -37,6 +38,7 @@ function PublicSite() {
   return (
     <div className="App">
       <ScrollProgress />
+      <TopBanner />
       <Navbar handleClick={handleClick} />
       <Home handleClick={handleClick} />
       <Footer handleClick={handleClick} />

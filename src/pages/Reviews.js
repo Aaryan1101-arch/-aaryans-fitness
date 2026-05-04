@@ -1,8 +1,9 @@
-import React from "react";
-import Carousel from "react-material-ui-carousel";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSiteContent, imgUrl } from "../sanity/SiteContent";
 import SectionHeading from "../components/motion/SectionHeading";
+
+const INTERVAL = 5500;
 
 const Star = ({ size = "w-4 h-4", filled = true }) => (
   <svg
@@ -23,6 +24,123 @@ const StarsRow = ({ rating = 5, size }) => (
     ))}
   </div>
 );
+
+const slideVariants = {
+  enter: (dir) => ({ x: dir > 0 ? "100%" : "-100%", opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir) => ({ x: dir > 0 ? "-100%" : "100%", opacity: 0 }),
+};
+
+const ReviewCarousel = ({ reviews }) => {
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+
+  const paginate = useCallback((dir) => {
+    setDirection(dir);
+    setIndex((i) => (i + dir + reviews.length) % reviews.length);
+  }, [reviews.length]);
+
+  // Auto-advance; timer resets whenever the user manually navigates.
+  useEffect(() => {
+    if (reviews.length <= 1) return;
+    const id = setInterval(() => paginate(1), INTERVAL);
+    return () => clearInterval(id);
+  }, [index, paginate, reviews.length]);
+
+  if (!reviews.length) return null;
+  const review = reviews[index];
+  const photo = imgUrl(review.photo);
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Slide area */}
+      <div className="overflow-hidden rounded-2xl">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={review._id || index}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            drag={reviews.length > 1 ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.12}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -60) paginate(1);
+              else if (info.offset.x > 60) paginate(-1);
+            }}
+            className="relative bg-gradient-to-br from-ink-700 via-ink-700 to-ink-800 p-6 sm:p-8 rounded-2xl border border-white/10 shadow-card cursor-grab active:cursor-grabbing select-none"
+          >
+            {/* decorative quote glyph */}
+            <span
+              aria-hidden
+              className="absolute top-3 right-4 text-7xl font-serif text-brand/20 leading-none pointer-events-none"
+            >
+              &rdquo;
+            </span>
+            <div className="flex items-start gap-4">
+              {photo && (
+                <img
+                  src={photo}
+                  alt={review.name}
+                  draggable={false}
+                  className="h-14 w-14 rounded-full object-cover object-center ring-2 ring-brand/40 ring-offset-2 ring-offset-ink-700 flex-shrink-0"
+                />
+              )}
+              <div>
+                <p className="text-lg font-medium text-white">{review.name}</p>
+                <StarsRow rating={review.rating || 5} />
+              </div>
+            </div>
+            <p className="mt-4 leading-relaxed text-white/70">{review.review}</p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Dots + arrows */}
+      {reviews.length > 1 && (
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={() => paginate(-1)}
+            aria-label="Previous review"
+            className="icon-button w-9 h-9"
+          >
+            <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+
+          <div className="flex items-center gap-1.5">
+            {reviews.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => { setDirection(i > index ? 1 : -1); setIndex(i); }}
+                aria-label={`Review ${i + 1}`}
+                className={`rounded-full transition-all duration-300 touch-manipulation ${
+                  i === index
+                    ? "w-6 h-2 bg-brand shadow-glow-sm"
+                    : "w-2 h-2 bg-white/25 hover:bg-white/50"
+                }`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={() => paginate(1)}
+            aria-label="Next review"
+            className="icon-button w-9 h-9"
+          >
+            <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Reviews = () => {
   const { content } = useSiteContent();
@@ -64,60 +182,15 @@ const Reviews = () => {
             </p>
           </div>
         </motion.div>
+
         <motion.div
           initial={{ opacity: 0, x: 24 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex flex-col w-full review:w-1/2"
+          className="w-full review:w-1/2"
         >
-          <Carousel
-            navButtonsAlwaysVisible={false}
-            indicatorIconButtonProps={{
-              style: { color: "rgba(255,255,255,0.25)" },
-            }}
-            activeIndicatorIconButtonProps={{
-              style: { color: "#a80717" },
-            }}
-            interval={5500}
-            duration={500}
-          >
-            {reviews.map((review) => {
-              const photo = imgUrl(review.photo);
-              return (
-                <div
-                  key={review._id}
-                  className="relative bg-gradient-to-br from-ink-700 via-ink-700 to-ink-800 p-6 sm:p-8 rounded-2xl border border-white/10 shadow-card"
-                >
-                  {/* big quote glyph */}
-                  <span
-                    aria-hidden
-                    className="absolute top-3 right-4 text-7xl font-serif text-brand/20 leading-none select-none"
-                  >
-                    &rdquo;
-                  </span>
-                  <div className="flex items-start gap-4">
-                    {photo && (
-                      <img
-                        src={photo}
-                        alt={review.name}
-                        className="h-14 w-14 rounded-full object-cover object-center ring-2 ring-brand/40 ring-offset-2 ring-offset-ink-700"
-                      />
-                    )}
-                    <div>
-                      <p className="text-lg font-medium text-white">
-                        {review.name}
-                      </p>
-                      <StarsRow rating={review.rating || 5} />
-                    </div>
-                  </div>
-                  <p className="mt-4 leading-relaxed text-white/70">
-                    {review.review}
-                  </p>
-                </div>
-              );
-            })}
-          </Carousel>
+          <ReviewCarousel reviews={reviews} />
         </motion.div>
       </div>
     </section>

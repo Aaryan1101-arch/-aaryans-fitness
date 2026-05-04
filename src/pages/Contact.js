@@ -15,6 +15,8 @@ const EJ_TEMPLATE = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
 const EJ_KEY      = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
 const emailConfigured = Boolean(EJ_SERVICE && EJ_TEMPLATE && EJ_KEY);
 
+const AUTOCOMPLETE = { user_name: "name", user_email: "email", user_number: "tel", message: "off" };
+
 const FormField = ({ label, id, name, type = "text", required, multiline, placeholder }) => {
   const Tag = multiline ? "textarea" : "input";
   return (
@@ -27,9 +29,10 @@ const FormField = ({ label, id, name, type = "text", required, multiline, placeh
         id={id}
         name={name}
         type={type}
+        autoComplete={AUTOCOMPLETE[name] || "off"}
         rows={multiline ? 4 : undefined}
         placeholder={placeholder}
-        className="block w-full sm:w-80 lg:w-96 p-3 text-white bg-white/5 border border-white/10 rounded-xl placeholder:text-white/30 hover:border-white/30 focus:outline-none focus:border-brand focus:bg-white/[0.07] focus:ring-2 focus:ring-brand/30 transition-all duration-200"
+        className="block w-full p-3 text-white bg-white/5 border border-white/10 rounded-xl placeholder:text-white/30 hover:border-white/30 focus:outline-none focus:border-brand focus:bg-white/[0.07] focus:ring-2 focus:ring-brand/30 transition-all duration-200"
       />
     </div>
   );
@@ -104,7 +107,7 @@ const Contact = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.5 }}
-          className="w-full sm:w-9/12 form:w-1/2 mx-auto form:mx-0 flex flex-col gap-4"
+          className="w-full form:w-1/2 mx-auto form:mx-0 flex flex-col gap-4"
         >
           <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 shadow-card">
             {mapEmbedUrl && (
@@ -113,6 +116,7 @@ const Contact = () => {
                 width="100%"
                 height="100%"
                 src={mapEmbedUrl}
+                loading="lazy"
                 className="block grayscale-[20%] hover:grayscale-0 transition-all duration-500"
               />
             )}
@@ -153,7 +157,7 @@ const Contact = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.5, delay: 0.05 }}
-          className="relative mx-auto form:mx-0"
+          className="relative w-full max-w-lg mx-auto form:mx-0 form:max-w-none form:w-1/2"
         >
           {(emailConfigured || supabaseConfigured) ? (
             <form ref={form} onSubmit={sendEmail}>
@@ -164,7 +168,7 @@ const Contact = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="button w-full sm:w-80 lg:w-96 justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed"
+                className="button w-full justify-center text-base disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <span className="inline-flex items-center gap-2">

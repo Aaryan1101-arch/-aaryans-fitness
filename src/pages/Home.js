@@ -4,6 +4,7 @@ import Services from "./Services";
 import Gallery from "./Gallery";
 import Team from "./Team";
 import Membership from "./Membership";
+import Supplements from "./Supplements";
 import Reviews from "./Reviews";
 import Contact from "./Contact";
 
@@ -15,6 +16,7 @@ const Home = ({ handleClick }) => {
       <Gallery />
       <Team />
       <Membership handleClick={handleClick} />
+      <Supplements />
       <Reviews />
       <Contact />
     </>

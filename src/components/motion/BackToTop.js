@@ -28,7 +28,8 @@ const BackToTop = () => {
           transition={{ duration: 0.25 }}
           onClick={goTop}
           aria-label="Back to top"
-          className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-brand text-white shadow-glow hover:shadow-glow-lg hover:-translate-y-1 transition-all duration-200 flex items-center justify-center"
+          className="fixed right-6 z-40 w-12 h-12 rounded-full bg-brand text-white shadow-glow hover:shadow-glow-lg hover:-translate-y-1 transition-all duration-200 flex items-center justify-center"
+          style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom, 0px))" }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

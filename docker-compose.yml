@@ -1,0 +1,35 @@
+services:
+  # ── React app (built by node, served by nginx) ────────────
+  web:
+    build:
+      context: .
+      args:
+        REACT_APP_SANITY_PROJECT_ID:   ${REACT_APP_SANITY_PROJECT_ID}
+        REACT_APP_SANITY_DATASET:      ${REACT_APP_SANITY_DATASET:-production}
+        REACT_APP_EMAILJS_SERVICE_ID:  ${REACT_APP_EMAILJS_SERVICE_ID}
+        REACT_APP_EMAILJS_TEMPLATE_ID: ${REACT_APP_EMAILJS_TEMPLATE_ID}
+        REACT_APP_EMAILJS_PUBLIC_KEY:  ${REACT_APP_EMAILJS_PUBLIC_KEY}
+        REACT_APP_SUPABASE_URL:        ${REACT_APP_SUPABASE_URL}
+        REACT_APP_SUPABASE_ANON_KEY:   ${REACT_APP_SUPABASE_ANON_KEY}
+    expose:
+      - "80"
+    restart: unless-stopped
+
+  # ── Caddy (HTTPS reverse proxy + auto Let's Encrypt cert) ─
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"    # HTTP/3 (QUIC)
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data           # cert storage — do not delete
+      - caddy_config:/config
+    depends_on:
+      - web
+
+volumes:
+  caddy_data:
+  caddy_config:

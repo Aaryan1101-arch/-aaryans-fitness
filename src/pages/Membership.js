@@ -30,7 +30,7 @@ const PlanCard = ({ plan, index }) => {
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -8 }}
-      className={`relative w-full sm:w-80 rounded-2xl p-8 sm:p-10 transition-all duration-300 ${
+      className={`relative w-full max-w-sm rounded-2xl p-8 sm:p-10 transition-all duration-300 ${
         popular
           ? "border-2 border-brand bg-gradient-to-br from-brand/10 via-ink-800 to-ink-900 shadow-glow"
           : "border border-white/10 bg-white/[0.03] hover:border-white/30 shadow-card"
@@ -95,7 +95,7 @@ const Membership = ({ handleClick }) => {
         sub="Pick the cadence that fits your routine. Switch any time — no lock-in, no penalty."
       />
 
-      <div className="relative z-10 flex justify-center flex-wrap gap-8 lg:gap-12 mt-2">
+      <div className="relative z-10 flex justify-center flex-wrap gap-8 lg:gap-10 mt-6 pt-4">
         {plans.map((plan, i) => (
           <PlanCard plan={plan} key={plan._id} index={i} />
         ))}

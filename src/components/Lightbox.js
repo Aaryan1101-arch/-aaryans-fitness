@@ -100,20 +100,28 @@ const Lightbox = ({ open, items, index, onClose, onIndex }) => {
             </button>
           )}
 
-          {/* Image */}
+          {/* Image — drag horizontally to swipe on touch */}
           <motion.div
             key={current.url}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="relative max-w-[90vw] max-h-[85vh]"
+            drag={items.length > 1 ? "x" : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.15}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -60) goNext();
+              else if (info.offset.x > 60) goPrev();
+            }}
+            className="relative max-w-[90vw] max-h-[85vh] cursor-grab active:cursor-grabbing"
             onClick={(e) => e.stopPropagation()}
           >
             <img
               src={current.url}
               alt={current.alt || current.caption || ""}
-              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-glow"
+              draggable={false}
+              className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-glow select-none"
             />
             {current.caption && (
               <p className="text-center text-white/80 text-sm mt-3">

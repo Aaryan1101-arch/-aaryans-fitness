@@ -35,7 +35,7 @@ const builder = client ? imageUrlBuilder(client) : null;
 export function urlFor(image) {
   if (!builder || !image) return null;
   try {
-    return builder.image(image).auto("format").url();
+    return builder.image(image).auto("format").quality(82).url();
   } catch {
     return null;
   }

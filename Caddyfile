@@ -1,0 +1,20 @@
+# ─────────────────────────────────────────────────────────────
+#  Replace yourdomain.com with your actual domain.
+#  Caddy auto-provisions a free Let's Encrypt certificate,
+#  handles HTTP → HTTPS redirect, and enables HTTP/2 + HTTP/3.
+# ─────────────────────────────────────────────────────────────
+
+yourdomain.com {
+    reverse_proxy web:80
+
+    # HSTS + security headers on top of what nginx sets
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        -Server
+    }
+
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+}

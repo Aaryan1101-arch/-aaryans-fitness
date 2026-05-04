@@ -4,7 +4,7 @@
 
 @layer components {
     .button {
-        @apply relative inline-flex items-center justify-center font-medium text-white bg-brand rounded-xl px-5 py-2 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0;
+        @apply relative inline-flex items-center justify-center font-semibold text-white bg-brand rounded-xl px-5 py-2.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 touch-manipulation select-none;
     }
 
     .button::after {
@@ -19,20 +19,24 @@
     }
 
     .button:active {
-        scale: 0.96;
-        transition: all 0.1s ease;
+        scale: 0.97;
+        transition: all 0.08s ease;
     }
 
     .button-ghost {
-        @apply inline-flex items-center justify-center font-medium text-white/80 border border-white/20 rounded-xl px-5 py-2 transition-all duration-300 hover:text-white hover:border-white/60 hover:bg-white/5;
+        @apply inline-flex items-center justify-center font-medium text-white/80 border border-white/25 rounded-xl px-5 py-2.5 transition-all duration-300 hover:text-white hover:border-white/60 hover:bg-white/5 touch-manipulation select-none;
     }
 
     .navbar {
-        @apply fixed z-30 top-0 w-full px-8 sm:px-12 md:px-16 py-3 font-medium text-white/70 flex justify-between items-center transition-all duration-300;
+        @apply fixed z-30 w-full px-5 xs:px-8 sm:px-12 md:px-16 py-3 font-medium text-white/70 flex justify-between items-center transition-all duration-300;
+        /* Sit just below the TopBanner. var is published by TopBanner.js,
+           defaults to 0 when no banner is shown. */
+        top: var(--banner-h, 0px);
+        padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
     }
 
     .navbar-scrolled {
-        @apply bg-black/85 backdrop-blur-md shadow-[0_2px_24px_-12px_rgba(0,0,0,0.6)] border-b border-white/5;
+        @apply bg-black/90 backdrop-blur-md shadow-[0_2px_24px_-12px_rgba(0,0,0,0.8)] border-b border-white/[0.06];
     }
 
     .navbar-top {
@@ -62,11 +66,11 @@
     }
 
     .section {
-        @apply relative py-20 px-5 xs:px-8 sm:px-12 md:px-16;
+        @apply relative py-14 sm:py-20 px-5 xs:px-8 sm:px-12 md:px-16;
     }
 
     .section-title {
-        @apply text-2xl xs:text-3xl sm:text-4xl text-center font-semibold uppercase tracking-wide text-white;
+        @apply text-2xl xs:text-3xl sm:text-4xl text-center font-bold tracking-tight text-white;
     }
 
     .section-eyebrow {
@@ -74,26 +78,32 @@
     }
 
     .section-sub {
-        @apply mt-3 mb-12 text-center text-white/60 sm:text-lg font-medium max-w-2xl mx-auto;
+        @apply mt-3 mb-10 sm:mb-12 text-center text-white/55 sm:text-lg font-normal max-w-2xl mx-auto leading-relaxed;
     }
 
     /* Glassy card surface used for plans, reviews, etc. */
     .glass-card {
-        @apply relative rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-card transition-all duration-300;
+        @apply relative rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm shadow-card transition-all duration-300;
     }
 
     .glass-card:hover {
-        @apply border-white/20 bg-white/[0.05] -translate-y-1 shadow-card-hover;
+        @apply border-white/20 bg-white/[0.06] shadow-card-hover;
     }
 
     /* Animated gradient divider used between sections. */
     .divider {
-        @apply h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent;
+        @apply h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent;
     }
 
     /* Base style for an icon button (close, back-to-top, etc.). */
     .icon-button {
-        @apply inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/70 border border-white/10 text-white/80 hover:text-white hover:bg-black/90 hover:border-white/30 transition-all duration-200;
+        @apply inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full bg-black/70 border border-white/10 text-white/80 hover:text-white hover:bg-black/90 hover:border-white/30 transition-all duration-200 touch-manipulation;
+    }
+
+    /* Mobile drawer bottom padding respecting home-indicator safe area */
+    .drawer-footer {
+        @apply px-5 pt-5 border-t border-white/10;
+        padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
     }
 }
 
@@ -102,19 +112,23 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box !important;
-        font-family: Figtree, sans-serif !important;
-        font-feature-settings: normal !important;
+        -webkit-tap-highlight-color: transparent;
     }
 
     html {
         scroll-padding-top: 4.5rem;
         scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+        font-family: Figtree, ui-sans-serif, system-ui, -apple-system, sans-serif;
     }
 
     body {
         background-color: #0a0a0a;
         color: rgba(255, 255, 255, 0.85);
         overflow-x: hidden;
+        font-family: inherit;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     /* Subtle dotted noise behind the whole page for visual depth. */
@@ -122,46 +136,33 @@
         content: "";
         position: fixed;
         inset: 0;
-        background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+        background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
         background-size: 3px 3px;
         pointer-events: none;
         z-index: 0;
-        opacity: 0.7;
+        opacity: 0.6;
     }
 
-    /* Scrollbars: thin and on-brand on desktop, hidden on touch devices. */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+    /* Scrollbars: thin and on-brand on desktop, hidden on touch. */
+    @media (pointer: fine) {
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(168, 7, 23, 0.45); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(168, 7, 23, 0.8); }
     }
 
-    ::-webkit-scrollbar-track {
-        background: transparent;
-    }
+    /* Hide scrollbars on snap rows. */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
 
-    ::-webkit-scrollbar-thumb {
-        background: rgba(168, 7, 23, 0.5);
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgba(168, 7, 23, 0.85);
-    }
-
-    /* Hide horizontal-only scrollbars on snap rows. */
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
-
-    .no-scrollbar {
-        scrollbar-width: none;
+    /* Gallery / services images on touch: always show the hover overlay hint */
+    @media (hover: none) {
+        .touch-reveal-hint { opacity: 1 !important; }
     }
 
     /* Honour reduced-motion preference. */
     @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
+        *, *::before, *::after {
             animation-duration: 0.001ms !important;
             transition-duration: 0.001ms !important;
             scroll-behavior: auto !important;

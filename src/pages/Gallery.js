@@ -65,7 +65,7 @@ const Gallery = () => {
             <button
               key={String(cat.value)}
               onClick={() => setActiveCategory(cat.value)}
-              className={`px-4 py-2 text-sm rounded-full border transition-all duration-300 ${
+              className={`min-h-[44px] px-5 py-2.5 text-sm rounded-full border transition-all duration-300 touch-manipulation ${
                 active
                   ? "bg-brand text-white border-brand shadow-glow-sm"
                   : "bg-white/[0.03] border-white/10 text-white/60 hover:text-white hover:border-white/30"
@@ -102,13 +102,13 @@ const Gallery = () => {
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                <div className="touch-reveal-hint absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
                   <span className="text-white text-xs font-medium">
                     {img.caption || img.category}
                   </span>
                 </div>
                 {/* Zoom-in hint icon */}
-                <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="touch-reveal-hint absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <svg
                     fill="none"
                     viewBox="0 0 24 24"

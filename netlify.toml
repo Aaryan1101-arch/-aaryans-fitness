@@ -1,0 +1,29 @@
+[build]
+  command   = "npm run build"
+  publish   = "build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # CI=true on Netlify treats CRA warnings as errors. Set to false so a stray
+  # ESLint warning doesn't fail an otherwise-clean deploy.
+  CI = "false"
+
+# SPA routing — send every URL to index.html so React Router handles it.
+# This keeps /admin/* working on hard refresh.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# Long-cache fingerprinted CRA build assets (the filenames have content hashes
+# so they're safe to cache forever).
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Mid-cache the bundled images in /public/images.
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

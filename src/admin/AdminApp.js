@@ -13,6 +13,9 @@ import ServicesEditor from './pages/content/ServicesEditor'
 import GalleryEditor from './pages/content/GalleryEditor'
 import TeamEditor from './pages/content/TeamEditor'
 import ReviewsEditor from './pages/content/ReviewsEditor'
+import OffersEditor from './pages/content/OffersEditor'
+import SupplementsEditor from './pages/content/SupplementsEditor'
+import NoticesEditor from './pages/content/NoticesEditor'
 
 function Spinner() {
   return (
@@ -42,6 +45,9 @@ function AdminShell({ admin, onSignOut }) {
           <Route path="content/gallery" element={<GalleryEditor />} />
           <Route path="content/team" element={<TeamEditor />} />
           <Route path="content/reviews" element={<ReviewsEditor />} />
+          <Route path="content/offers" element={<OffersEditor />} />
+          <Route path="content/supplements" element={<SupplementsEditor />} />
+          <Route path="content/notices" element={<NoticesEditor />} />
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>
       </main>

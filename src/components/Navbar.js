@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSiteContent, imgUrl } from "../sanity/SiteContent";
 import useActiveSection from "../hooks/useActiveSection";
@@ -9,16 +9,25 @@ const NAV_LINKS = [
   { id: "gallery", label: "Gallery" },
   { id: "team", label: "Team" },
   { id: "membership", label: "Membership" },
+  { id: "supplements", label: "Supplements", optional: true },
   { id: "reviews", label: "Reviews" },
   { id: "contact", label: "Contact" },
 ];
-
-const NAV_IDS = NAV_LINKS.map((l) => l.id);
 
 const Navbar = ({ handleClick }) => {
   const { content } = useSiteContent();
   const settings = content.siteSettings || {};
   const logoUrl = imgUrl(settings.logo);
+
+  // Hide nav links for sections that have no content (e.g. Supplements when
+  // the admin hasn't published any). Keep this list in sync with sections that
+  // can be empty. Memoised so `useActiveSection` doesn't re-observe every render.
+  const hasSupplements = (content?.supplements || []).length > 0;
+  const visibleLinks = useMemo(
+    () => NAV_LINKS.filter((l) => !(l.id === "supplements" && !hasSupplements)),
+    [hasSupplements]
+  );
+  const NAV_IDS = useMemo(() => visibleLinks.map((l) => l.id), [visibleLinks]);
 
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -30,6 +39,12 @@ const Navbar = ({ handleClick }) => {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Lock body scroll while the drawer is open.
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
 
   // Close mobile drawer whenever the user navigates to a link.
   const navigate = (e, id) => {
@@ -45,7 +60,7 @@ const Navbar = ({ handleClick }) => {
           <button
             onClick={() => setOpen((v) => !v)}
             aria-label="Toggle menu"
-            className="lg:hidden relative w-8 h-8 flex flex-col justify-center items-center gap-1.5 text-white"
+            className="lg:hidden relative min-w-[44px] min-h-[44px] flex flex-col justify-center items-center gap-1.5 text-white touch-manipulation"
           >
             <motion.span
               animate={
@@ -89,7 +104,7 @@ const Navbar = ({ handleClick }) => {
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-7">
-            {NAV_LINKS.map((l) => (
+            {visibleLinks.map((l) => (
               <a
                 key={l.id}
                 href="/"
@@ -157,7 +172,7 @@ const Navbar = ({ handleClick }) => {
                 </button>
               </div>
               <div className="flex-1 px-2 py-4 overflow-y-auto">
-                {NAV_LINKS.map((l, i) => (
+                {visibleLinks.map((l, i) => (
                   <motion.a
                     key={l.id}
                     href="/"
@@ -178,7 +193,7 @@ const Navbar = ({ handleClick }) => {
                   </motion.a>
                 ))}
               </div>
-              <div className="p-5 border-t border-white/10">
+              <div className="drawer-footer">
                 <a
                   href="/"
                   onClick={(e) => navigate(e, "contact")}

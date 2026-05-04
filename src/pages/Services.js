@@ -55,10 +55,13 @@ const ServiceCard = ({ service, index }) => {
         </div>
       </div>
 
-      {/* Bottom-right "tap" hint, mobile */}
-      <div className="absolute bottom-3 right-3 text-[10px] uppercase tracking-widest text-white/50 sm:hidden">
-        Tap for hours
-      </div>
+      {/* "tap" hint — hidden once overlay is open, hidden on desktop (hover handles it) */}
+      {!open && (
+        <div className="touch-reveal-hint absolute bottom-3 right-3 md:hidden opacity-0 group-hover:opacity-0 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1.5 text-[11px] font-medium text-white/80 pointer-events-none">
+          <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-3.5 h-3.5 flex-shrink-0"><path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672ZM12 2.25V4.5m5.834.166-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243-1.59-1.59" /></svg>
+          Tap for hours
+        </div>
+      )}
     </motion.div>
   );
 };
@@ -79,7 +82,7 @@ const Services = () => {
       />
 
       <div className="relative max-w-6xl mx-auto">
-        <div className="md:grid flex overflow-x-auto snap-x snap-mandatory md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 no-scrollbar">
+        <div className="md:grid flex overflow-x-auto snap-x snap-mandatory scroll-px-5 xs:scroll-px-8 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 no-scrollbar pb-2 md:pb-0">
           {services.map((service, i) => (
             <ServiceCard key={service._id} service={service} index={i} />
           ))}

@@ -141,4 +141,9 @@ export const FALLBACK_CONTENT = {
         "I found solution to all my design needs from Creative Tim. I use them as a freelancer in my hobby projects for fun! And its really affordable, very humble guys !!!",
     },
   ],
+  // New dynamic blocks — empty by default so the public site stays clean
+  // until the admin publishes something in Supabase.
+  notices: [],
+  offers: [],
+  supplements: [],
 };
